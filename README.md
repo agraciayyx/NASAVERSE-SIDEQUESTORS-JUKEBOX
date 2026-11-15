@@ -82,7 +82,7 @@ Vercel hosts the site straight from this GitHub repo. There's no build step.
 **Setting it up (once, by the repo owner)**
 1. Sign in to Vercel with the GitHub account that owns this repo, then **Add New → Project** and import `NASAVERSE-SIDEQUESTORS-JUKEBOX`.
 2. Set **Framework Preset** to **Other**. Leave **Build Command** empty, and leave **Output Directory** as the repository root.
-3. Press **Deploy**. Vercel gives you the public link, e.g. `https://nasaversesidequestorsjukebox.vercel.app/homepageUI/`. The root `index.html` redirects to the jukebox.
+3. Press **Deploy**. Vercel gives you the public link, e.g. `https://<project>.vercel.app`. The root `index.html` redirects to the jukebox.
 
 **Updating it**
 - Every merge into `main` redeploys the site automatically.
