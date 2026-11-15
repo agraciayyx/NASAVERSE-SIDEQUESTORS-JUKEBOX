@@ -10,20 +10,20 @@ from collections import defaultdict
 # ==========================================
 
 video_path = "iss_lightning_sphere_07312023_60p4k.mp4"
-output_file = "lightning_master_dataset.csv"
+output_file = "lightning_master_dataset2.csv"
 
 # HSV range for yellow/orange-yellow lightning
 LOWER_YELLOW = np.array([15, 100, 150])
 UPPER_YELLOW = np.array([40, 255, 255])
 V_MIN = int(LOWER_YELLOW[2])      # used to stretch brightness to 0-1
 
-MIN_AREA = 2                      # minimum real (undilated) pixels
+MIN_AREA = 15                      # minimum real (undilated) pixels
 OPEN_KERNEL = 3                   # noise removal size. Set to 1 to disable
                                   # (opening with 3 deletes blobs under ~3x3 px)
 
 # Event tracking
-MAX_DISTANCE = 30
-MAX_GAP_FRAMES = 3
+MAX_DISTANCE = 45
+MAX_GAP_FRAMES = 5
 
 # Phase boundaries (seconds)
 PHASE_2_START = 20
@@ -33,7 +33,8 @@ PHASE_3_START = 70
 WINDOW_SEC = 0.2
 
 # Optional: save mask/overlay images at these times (seconds) to tune thresholds
-DEBUG_TIMES = []                  # e.g. [30.0, 80.0]
+# DEBUG_TIMES = []                  # e.g. [30.0, 80.0]
+DEBUG_TIMES = [25.5, 30.0]
 
 LAT_ZONES = ["Northern", "Equatorial", "Southern"]
 LON_ZONES = ["Left", "Centre", "Right"]
@@ -101,6 +102,36 @@ def detect_lightning(frame):
             "mean": max(0.0, min(1.0, mean)),
         })
     return detections
+
+def remove_small_fragments(detections):
+    """
+    Remove tiny detections that are very close to
+    a larger lightning region in the same frame.
+    """
+    filtered = []
+
+    for det in detections:
+        is_fragment = False
+
+        if det["area"] < 35:
+            for other in detections:
+
+                if other["area"] <= det["area"]:
+                    continue
+
+                distance = math.hypot(
+                    det["x"] - other["x"],
+                    det["y"] - other["y"]
+                )
+
+                if distance <= 22:
+                    is_fragment = True
+                    break
+
+        if not is_fragment:
+            filtered.append(det)
+
+    return filtered
 
 
 def save_debug(frame, detections, t):
@@ -190,71 +221,165 @@ def finalise_event(ev):
 # ==========================================
 
 while True:
+
     success, frame = cap.read()
+
     if not success:
         break
 
     timestamp = frame_number / FPS
+
+    # Detect lightning in current frame
     detections = detect_lightning(frame)
+
+    # Remove small fragments
+    detections = remove_small_fragments(detections)
 
     if frame_number in debug_frames:
         save_debug(frame, detections, timestamp)
 
-    # Expire old events
+    # -----------------------------------------
+    # 1. Finalise expired events
+    # -----------------------------------------
+
     remaining = []
+
     for ev in active_events:
+
         if frame_number - ev["last_frame"] > MAX_GAP_FRAMES:
             finalise_event(ev)
+
         else:
             remaining.append(ev)
+
     active_events = remaining
 
-    # Match detections to events
-    matched = set()
-    for det in detections:
-        best, best_dist = None, MAX_DISTANCE
-        for ev in active_events:
-            if ev["id"] in matched:
-                continue
-            dist = math.hypot(det["x"] - ev["last_x"], det["y"] - ev["last_y"])
-            if dist <= best_dist:
-                best, best_dist = ev, dist
+    # -----------------------------------------
+    # 2. Calculate all possible matches
+    # -----------------------------------------
 
-        if best is not None:
-            best["last_frame"] = frame_number
-            best["last_x"], best["last_y"] = det["x"], det["y"]
-            best["xs"].append(det["x"])
-            best["ys"].append(det["y"])
-            best["peak"] = max(best["peak"], det["peak"])
-            best["mean_sum"] += det["mean"]
-            best["n"] += 1
-            best["max_area"] = max(best["max_area"], det["area"])
-            matched.add(best["id"])
-        else:
-            active_events.append({
-                "id": next_event_id,
-                "start_ts": timestamp,
-                "start_frame": frame_number,
-                "last_frame": frame_number,
-                "last_x": det["x"], "last_y": det["y"],
-                "xs": [det["x"]], "ys": [det["y"]],
-                "peak": det["peak"],
-                "mean_sum": det["mean"], "n": 1,
-                "max_area": det["area"],
-            })
-            matched.add(next_event_id)
-            next_event_id += 1
+    possible_matches = []
+
+    for ev in active_events:
+
+        for det_index, det in enumerate(detections):
+
+            distance = math.hypot(
+                det["x"] - ev["last_x"],
+                det["y"] - ev["last_y"]
+            )
+
+            if distance <= MAX_DISTANCE:
+
+                possible_matches.append(
+                    (distance, ev, det_index)
+                )
+
+    # Closest matches are considered first
+    possible_matches.sort(key=lambda x: x[0])
+
+    matched_event_ids = set()
+    matched_detection_indices = set()
+
+    # -----------------------------------------
+    # 3. Match existing lightning events
+    # -----------------------------------------
+
+    for distance, ev, det_index in possible_matches:
+
+        if ev["id"] in matched_event_ids:
+            continue
+
+        if det_index in matched_detection_indices:
+            continue
+
+        det = detections[det_index]
+
+        # Update existing event
+        ev["last_frame"] = frame_number
+
+        ev["last_x"] = det["x"]
+        ev["last_y"] = det["y"]
+
+        ev["xs"].append(det["x"])
+        ev["ys"].append(det["y"])
+
+        ev["peak"] = max(
+            ev["peak"],
+            det["peak"]
+        )
+
+        ev["mean_sum"] += det["mean"]
+        ev["n"] += 1
+
+        ev["max_area"] = max(
+            ev["max_area"],
+            det["area"]
+        )
+
+        matched_event_ids.add(ev["id"])
+        matched_detection_indices.add(det_index)
+
+    # -----------------------------------------
+    # 4. Create events for genuinely unmatched
+    #    detections
+    # -----------------------------------------
+
+    for det_index, det in enumerate(detections):
+
+        if det_index in matched_detection_indices:
+            continue
+
+        new_event = {
+            "id": next_event_id,
+
+            "start_ts": timestamp,
+            "start_frame": frame_number,
+
+            "last_frame": frame_number,
+
+            "last_x": det["x"],
+            "last_y": det["y"],
+
+            "xs": [det["x"]],
+            "ys": [det["y"]],
+
+            "peak": det["peak"],
+            "mean_sum": det["mean"],
+            "n": 1,
+
+            "max_area": det["area"],
+        }
+
+        active_events.append(new_event)
+
+        next_event_id += 1
+
+    # -----------------------------------------
+    # 5. Progress
+    # -----------------------------------------
 
     if frame_number % 300 == 0:
-        print(f"Processing: {frame_number}/{total_frames} "
-              f"({frame_number / total_frames * 100:.1f}%)")
+
+        print(
+            f"Processing: {timestamp:.2f}s | "
+            f"Detections: {len(detections)} | "
+            f"Active events: {len(active_events)} | "
+            f"Total events: {next_event_id - 1}"
+        )
 
     frame_number += 1
+
+
+# -----------------------------------------
+# 6. Finalise remaining events
+# -----------------------------------------
 
 for ev in active_events:
     finalise_event(ev)
 
 cap.release()
+
 
 
 # ==========================================
