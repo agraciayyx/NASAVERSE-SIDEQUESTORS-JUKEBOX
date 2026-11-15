@@ -1,0 +1,22 @@
+import numpy as np
+import pandas as pd
+
+VIDEO_W = 3840                       # video width in pixels (change if different)
+NOTE_NAMES = ["A", "B", "C", "D", "E", "F", "G"]
+SEMITONES  = [0, 2, 3, 5, 7, 8, 10]  # A minor scale steps above A
+BASE_A_HZ  = 220.0                   # lowest note (A3)
+FREQS = [BASE_A_HZ * 2 ** (s / 12) for s in SEMITONES]
+
+df = pd.read_csv("first_lightning_master_dataset.csv").sort_values("Timestamp").reset_index(drop=True)
+
+# Pan: X position -> -1 (left) to +1 (right)
+df["Pan"] = (df["X"] / VIDEO_W * 2 - 1).clip(-1, 1).round(3)
+
+# Note: Y position -> A (bottom/southern) to G (top/northern)
+norm = 1 - (df["Y"] - df["Y"].min()) / (df["Y"].max() - df["Y"].min())
+idx = (norm * 6).round().astype(int)
+df["Note"] = [NOTE_NAMES[i] for i in idx]
+df["Freq_Hz"] = [round(FREQS[i], 1) for i in idx]
+
+df.to_csv("2. amended_lightning_with_sound.csv", index=False)
+print(df.head(10))
