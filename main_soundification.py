@@ -60,20 +60,23 @@ if VIDEO_DURATION <= PHASE_2_END + RISER_DURATION + DROP_DURATION:
         "to accommodate the planned phases."
     )
 
-# Final 8 seconds are reserved for the cinematic ending
-RISER_START = VIDEO_DURATION - RISER_DURATION - DROP_DURATION
+# # Final 8 seconds are reserved for the cinematic ending
+# RISER_START = VIDEO_DURATION - RISER_DURATION - DROP_DURATION
 
-DROP_START = VIDEO_DURATION - DROP_DURATION
+# DROP_START = VIDEO_DURATION - DROP_DURATION
 
-STORM_END = RISER_START
+# STORM_END = RISER_START
 
+# STORM_DURATION = STORM_END - PHASE_2_END
+
+STORM_END = VIDEO_DURATION
 STORM_DURATION = STORM_END - PHASE_2_END
 
 print(f"Phase 1: 0 - {PHASE_1_END}s")
 print(f"Phase 2: {PHASE_1_END} - {PHASE_2_END}s")
 print(f"Phase 3: {PHASE_2_END} - {STORM_END:.2f}s")
-print(f"Riser: {RISER_START:.2f} - {DROP_START:.2f}s")
-print(f"Drop: {DROP_START:.2f} - {VIDEO_DURATION:.2f}s")
+# print(f"Riser: {RISER_START:.2f} - {DROP_START:.2f}s")
+# print(f"Drop: {DROP_START:.2f} - {VIDEO_DURATION:.2f}s")
 
 
 
@@ -965,10 +968,16 @@ if storm_duration > 1:
 
         # Combine cinematic build-up with actual regional activity
         drum_strength = (
-            0.35
-            + 0.45 * progress
-            + 0.40 * activity_level
+            0.23
+            + 0.30 * progress
+            + 0.27 * activity_level
         )
+        # drum_strength = (
+        #     0.35
+        #     + 0.45 * progress
+        #     + 0.40 * activity_level
+        # )
+
 
         drum = taiko(
             strength=drum_strength
@@ -978,7 +987,8 @@ if storm_duration > 1:
             drum,
             drum_time,
             pan=RNG.uniform(-0.15, 0.15),
-            volume=0.9
+            volume=0.65
+            # volume = 0.9
         )
 
         # Gradually accelerate the rhythm
@@ -1015,144 +1025,159 @@ if storm_duration > 1:
             volume=0.18
         )
 
-
 # ==========================================================
-# 11. PHASE 4: THE CINEMATIC RISER (FINAL 8 SECONDS)
-# ==========================================================
-
-print("\nGenerating the cinematic riser...")
-
-riser_duration = DROP_START - RISER_START
-
-riser_samples = int(
-    riser_duration * SR
-)
-
-riser_t = np.arange(
-    riser_samples
-) / SR
-
-
-# --------------------------------------
-# A. Rising noise sweep
-# --------------------------------------
-
-riser_noise = filtered_noise(
-    riser_duration,
-    low=500,
-    high=10000
-)
-
-riser_envelope = (
-    np.linspace(0, 1, riser_samples) ** 2
-)
-
-riser_noise *= riser_envelope
-
-add_sound(
-    riser_noise.astype(np.float32),
-    RISER_START,
-    pan=0,
-    volume=0.12
-)
-
-
-# --------------------------------------
-# B. Rising tonal sweep
-# --------------------------------------
-
-riser_frequency = np.linspace(
-    200,
-    200 * 12,
-    riser_samples
-)
-
-riser_phase = (
-    2 * np.pi
-    * np.cumsum(riser_frequency)
-    / SR
-)
-
-riser_tone = np.sin(riser_phase)
-
-riser_tone *= riser_envelope
-
-add_sound(
-    riser_tone.astype(np.float32),
-    RISER_START,
-    pan=0,
-    volume=0.09
-)
-
-
-# ==========================================================
-# 12. PHASE 5: THE DROP (FINAL 4 SECONDS)
+# GENTLE ENDING
 # ==========================================================
 
-print("\nGenerating the final drop...")
+fade_duration = 8.0
+fade_start = max(0, VIDEO_DURATION - fade_duration)
 
-# Clear all sounds after the drop begins
-drop_sample = int(
-    DROP_START * SR
-)
+fade_start_sample = int(fade_start * SR)
+fade_end_sample = int(VIDEO_DURATION * SR)
 
-audio[drop_sample:, :] = 0
+fade_length = fade_end_sample - fade_start_sample
 
-# Brief silence before the final rumble
-impact_time = DROP_START + 0.65
+fade_curve = np.linspace(1.0, 0.0, fade_length)
 
-impact_duration = 2.5
+audio[fade_start_sample:fade_end_sample] *= fade_curve[:, None]
 
-impact_samples = int(
-    impact_duration * SR
-)
+# # ==========================================================
+# # 11. PHASE 4: THE CINEMATIC RISER (FINAL 8 SECONDS)
+# # ==========================================================
 
-impact_t = np.arange(
-    impact_samples
-) / SR
+# print("\nGenerating the cinematic riser...")
 
+# riser_duration = DROP_START - RISER_START
 
-# --------------------------------------
-# A. Deep cinematic impact
-# --------------------------------------
+# riser_samples = int(
+#     riser_duration * SR
+# )
 
-impact_frequency = (
-    65 - 35 * (
-        impact_t / impact_duration
-    )
-)
-
-impact_phase = (
-    2 * np.pi
-    * np.cumsum(impact_frequency)
-    / SR
-)
-
-impact = np.sin(impact_phase)
-
-impact *= np.exp(-2.2 * impact_t)
+# riser_t = np.arange(
+#     riser_samples
+# ) / SR
 
 
-# --------------------------------------
-# B. Low-frequency rumble
-# --------------------------------------
+# # --------------------------------------
+# # A. Rising noise sweep
+# # --------------------------------------
 
-rumble = filtered_noise(
-    impact_duration,
-    low=25,
-    high=100
-)
+# riser_noise = filtered_noise(
+#     riser_duration,
+#     low=500,
+#     high=10000
+# )
 
-rumble *= np.exp(-1.2 * impact_t)
+# riser_envelope = (
+#     np.linspace(0, 1, riser_samples) ** 2
+# )
 
-impact += rumble * 0.7
+# riser_noise *= riser_envelope
 
-add_sound(
-    impact.astype(np.float32),
-    impact_time,
-    pan=0,
-    volume=0.65
-)
+# add_sound(
+#     riser_noise.astype(np.float32),
+#     RISER_START,
+#     pan=0,
+#     volume=0.12
+# )
+
+
+# # --------------------------------------
+# # B. Rising tonal sweep
+# # --------------------------------------
+
+# riser_frequency = np.linspace(
+#     200,
+#     200 * 12,
+#     riser_samples
+# )
+
+# riser_phase = (
+#     2 * np.pi
+#     * np.cumsum(riser_frequency)
+#     / SR
+# )
+
+# riser_tone = np.sin(riser_phase)
+
+# riser_tone *= riser_envelope
+
+# add_sound(
+#     riser_tone.astype(np.float32),
+#     RISER_START,
+#     pan=0,
+#     volume=0.09
+# )
+
+
+# # ==========================================================
+# # 12. PHASE 5: THE DROP (FINAL 4 SECONDS)
+# # ==========================================================
+
+# print("\nGenerating the final drop...")
+
+# # Clear all sounds after the drop begins
+# drop_sample = int(
+#     DROP_START * SR
+# )
+
+# audio[drop_sample:, :] = 0
+
+# # Brief silence before the final rumble
+# impact_time = DROP_START + 0.65
+
+# impact_duration = 2.5
+
+# impact_samples = int(
+#     impact_duration * SR
+# )
+
+# impact_t = np.arange(
+#     impact_samples
+# ) / SR
+
+
+# # --------------------------------------
+# # A. Deep cinematic impact
+# # --------------------------------------
+
+# impact_frequency = (
+#     65 - 35 * (
+#         impact_t / impact_duration
+#     )
+# )
+
+# impact_phase = (
+#     2 * np.pi
+#     * np.cumsum(impact_frequency)
+#     / SR
+# )
+
+# impact = np.sin(impact_phase)
+
+# impact *= np.exp(-2.2 * impact_t)
+
+
+# # --------------------------------------
+# # B. Low-frequency rumble
+# # --------------------------------------
+
+# rumble = filtered_noise(
+#     impact_duration,
+#     low=25,
+#     high=100
+# )
+
+# rumble *= np.exp(-1.2 * impact_t)
+
+# impact += rumble * 0.7
+
+# add_sound(
+#     impact.astype(np.float32),
+#     impact_time,
+#     pan=0,
+#     volume=0.65
+# )
 
 
 # ==========================================================

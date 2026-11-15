@@ -10,7 +10,7 @@ import math
 # ==========================================
 
 video_path = "iss_lightning_sphere_07312023_60p4k.mp4"
-output_file = "3. lightning_dataset.csv"
+output_file = "lightning_dataset.csv"
 
 # Image processing resolution
 PROCESS_WIDTH = 960
