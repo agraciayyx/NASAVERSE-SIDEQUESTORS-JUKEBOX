@@ -251,5 +251,116 @@
    "end": 30.35,
    "text": "In 2015 and 2016, watch the Amazon turn magenta, as a severe drought grips the rainforest."
   }
+ ],
+ "d_intro": [
+  {
+   "start": 0.0,
+   "end": 7.27,
+   "text": "And as the planet warms, the air above it holds more heat and more water, the fuel of thunderstorms."
+  },
+  {
+   "start": 7.72,
+   "end": 14.74,
+   "text": "For six years, a sensor on the International Space Station watched lightning flash across the Earth."
+  },
+  {
+   "start": 15.19,
+   "end": 17.52,
+   "text": "Listen as the storm gathers."
+  }
+ ],
+ "d_hearing": [
+  {
+   "start": 0.0,
+   "end": 2.75,
+   "text": "Listen to lightning, seen from space."
+  },
+  {
+   "start": 3.2,
+   "end": 9.3,
+   "text": "At first, there is only the planet itself: a low hum, the wind, a slow pulse."
+  },
+  {
+   "start": 9.75,
+   "end": 11.63,
+   "text": "Then, single flashes."
+  },
+  {
+   "start": 12.08,
+   "end": 13.92,
+   "text": "Each one plays a note."
+  },
+  {
+   "start": 14.37,
+   "end": 21.41,
+   "text": "The higher a flash appears on the screen, the higher its note, and you hear it on the side where it struck."
+  },
+  {
+   "start": 21.86,
+   "end": 24.84,
+   "text": "Flashes in the north ring like glass."
+  },
+  {
+   "start": 25.29,
+   "end": 27.85,
+   "text": "Near the equator, they are plucked."
+  },
+  {
+   "start": 28.3,
+   "end": 30.86,
+   "text": "In the south, a cello answers."
+  },
+  {
+   "start": 31.31,
+   "end": 33.34,
+   "text": "Then the storm arrives."
+  },
+  {
+   "start": 33.79,
+   "end": 35.15,
+   "text": "Strings swell."
+  },
+  {
+   "start": 35.6,
+   "end": 40.11,
+   "text": "Drums quicken, and strike harder whenever more lightning flashes."
+  },
+  {
+   "start": 40.56,
+   "end": 42.75,
+   "text": "And the thunder rolls in."
+  }
+ ],
+ "d_visual": [
+  {
+   "start": 0.0,
+   "end": 4.5,
+   "text": "This is NASA's view of lightning from the International Space Station."
+  },
+  {
+   "start": 4.95,
+   "end": 12.18,
+   "text": "First, we ride along with the station for a single day, the first of March, 2017."
+  },
+  {
+   "start": 12.63,
+   "end": 16.77,
+   "text": "Each yellow flash is a lightning strike it spotted below."
+  },
+  {
+   "start": 17.22,
+   "end": 23.45,
+   "text": "Then the view pulls back, and six years spin by, to July 2023."
+  },
+  {
+   "start": 23.9,
+   "end": 29.9,
+   "text": "Ten days of strikes are shown at a time, so you can watch the storms follow the seasons."
+  },
+  {
+   "start": 30.35,
+   "end": 34.31,
+   "text": "Watch the flashes gather, and listen to the storm build."
+  }
  ]
 }

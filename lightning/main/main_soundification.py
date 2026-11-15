@@ -1,4 +1,5 @@
 
+import os
 import cv2
 import pandas as pd
 import numpy as np
@@ -11,11 +12,14 @@ from scipy.signal import butter, sosfilt
 # 1. SETTINGS
 # ==========================================================
 
-CSV_PATH = "3. lightning_dataset.csv"
+# Paths are relative to this script: lightning/main/ -> lightning/data, lightning/output
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-VIDEO_PATH = "iss_lightning_sphere_07312023_60p4k.mp4"
+CSV_PATH = os.path.join(BASE_DIR, "..", "data", "lightning_dataset.csv")
 
-OUTPUT_PATH = "final_soundscape.wav"
+VIDEO_PATH = os.path.join(BASE_DIR, "..", "data", "iss_lightning_sphere_07312023_60p4k.mp4")
+
+OUTPUT_PATH = os.path.join(BASE_DIR, "..", "output", "final_soundscape.wav")
 
 SR = 44100
 

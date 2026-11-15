@@ -9,8 +9,11 @@ import math
 # 1. SETTINGS
 # ==========================================
 
-video_path = "iss_lightning_sphere_07312023_60p4k.mp4"
-output_file = "lightning_dataset.csv"
+# Paths are relative to this script: lightning/main/ -> lightning/data
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+video_path = os.path.join(BASE_DIR, "..", "data", "iss_lightning_sphere_07312023_60p4k.mp4")
+output_file = os.path.join(BASE_DIR, "..", "data", "lightning_dataset.csv")
 
 # Image processing resolution
 PROCESS_WIDTH = 960
