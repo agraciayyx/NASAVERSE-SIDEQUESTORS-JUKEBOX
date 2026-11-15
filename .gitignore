@@ -1,0 +1,4 @@
+# Original NASA download (127 MB, over GitHub's 100 MB limit). The app uses the compressed copy, iss_lightning_720p.mp4.
+lightning/data/iss_lightning_sphere_07312023.mp4
+# 4K version (414 MB), only needed to re-run the lightning scripts
+lightning/data/iss_lightning_sphere_07312023_60p4k.mp4

@@ -208,7 +208,7 @@
   audio.addEventListener('timeupdate',updateTime);audio.addEventListener('loadedmetadata',()=>{updateTime();status();});
   audio.addEventListener('play',status);audio.addEventListener('pause',status);
   audio.addEventListener('error',()=>{if(loaded>=0){$('player-status').textContent='Audio file unavailable · check tracks.js';notify('Audio file unavailable. Check the configured WAV path.');}});
-  audio.addEventListener('ended',()=>{if(story){const next=tracks.findIndex((t,i)=>i>selected&&t.src);if(next>=0)storyStep(next);else{story=false;status();notify('Story complete. More tracks will join when your teammates add them.');}}else status();});
+  audio.addEventListener('ended',()=>{if(story){const next=tracks.findIndex((t,i)=>i>selected&&t.src);if(next>=0)storyStep(next);else{story=false;status();notify('Story complete. Thanks for listening.');}}else status();});
   window.addEventListener('hashchange',route);
   document.addEventListener('keydown',e=>{if(story||introPlaying)return;if(/INPUT|TEXTAREA|BUTTON|A/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle();}if(e.code==='ArrowRight')select(selected+1);if(e.code==='ArrowLeft')select(selected-1);});
   const video=$('track-video');

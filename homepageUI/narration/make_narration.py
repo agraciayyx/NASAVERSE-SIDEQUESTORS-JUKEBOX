@@ -94,6 +94,31 @@ SCRIPTS = {
             "In 2015 and 2016, watch the Amazon turn magenta, as a severe drought grips the rainforest."
         ),
     },
+    "d": {  # Lightning (ISS Lightning Imaging Sensor)
+        "intro": (
+            "And as the planet warms, the air above it holds more heat and more water, the fuel of thunderstorms. "
+            "For six years, a sensor on the International Space Station watched lightning flash across the Earth. "
+            "Listen as the storm gathers."
+        ),
+        "hearing": (
+            "Listen to lightning, seen from space. "
+            "At first, there is only the planet itself: a low hum, the wind, a slow pulse. "
+            "Then, single flashes. Each one plays a note. "
+            "The higher a flash appears on the screen, the higher its note, and you hear it on the side where it struck. "
+            "Flashes in the north ring like glass. Near the equator, they are plucked. In the south, a cello answers. "
+            "Then the storm arrives. Strings swell. "
+            "Drums quicken, and strike harder whenever more lightning flashes. "
+            "And the thunder rolls in."
+        ),
+        "visual": (
+            "This is NASA's view of lightning from the International Space Station. "
+            "First, we ride along with the station for a single day, the first of March, 2017. "
+            "Each yellow flash is a lightning strike it spotted below. "
+            "Then the view pulls back, and six years spin by, to July 2023. "
+            "Ten days of strikes are shown at a time, so you can watch the storms follow the seasons. "
+            "Watch the flashes gather, and listen to the storm build."
+        ),
+    },
 }
 
 
