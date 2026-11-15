@@ -2,6 +2,15 @@
 
 Our entry for the **NASA Space Apps Challenge 2026: The Earth Information Jukebox**.
 
+Meet the Team: 
+
+Yuting: The World After Dark, twelve years of Earth’s night lights, and the first version of the jukebox interface
+Ryan: A Planet With a Fever, 144 years of temperature from pole to pole
+Agracia: The Planet Breathing, the land absorbing and releasing CO₂, plus the narrated Play Story mode and the final interface
+Angela: The Storm Gathers, six years of lightning seen from the International Space Station
+
+Together, the four tracks tell one story: a brighter, warmer planet whose land is struggling to keep breathing, and whose skies are full of storms.
+
 Earth Jukebox turns four NASA visualizations into music you can hear, styled as a digital jukebox. Each track plays its own piece of music in step with the NASA video or images it was made from. A narrator explains what you are hearing and describes the visual, with captions. **Play Story** plays all four tracks in order as one narrated climate story.
 
 | # | Track | NASA data | Audio file |
