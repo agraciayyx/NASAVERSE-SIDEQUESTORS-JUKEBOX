@@ -211,8 +211,10 @@ Edit `homepageUI/tracks.js`. Each track has its name (`subtitle`), card line (`d
 All visualizations are by **NASA's Scientific Visualization Studio (SVS)**.
 
 - Track A: Earth at night, 2012–2023: [svs.gsfc.nasa.gov/5276](https://svs.gsfc.nasa.gov/5276/) (Kel Elkins)
-- Track B: GISTEMP zonal temperature anomalies, 1880–2023: [svs.gsfc.nasa.gov/5209](https://svs.gsfc.nasa.gov/5209)
+- Track B: GISTEMP zonal temperature anomalies, 1880–2023: [svs.gsfc.nasa.gov/5209](https://svs.gsfc.nasa.gov/5209) (Mark SubbaRao). Data: NASA GISS Surface Temperature Analysis (GISTEMP v4), [data.giss.nasa.gov/gistemp](https://data.giss.nasa.gov/gistemp/)
 - Track C: Net ecosystem exchange of CO₂: [svs.gsfc.nasa.gov/5047](https://svs.gsfc.nasa.gov/5047)
 - Track D: Lightning events detected from the ISS, 2017–2023: [svs.gsfc.nasa.gov/5011](https://svs.gsfc.nasa.gov/5011/)
 
-Our scripts read the colours and brightness of NASA's *rendered* images and videos, not the raw scientific datasets. The music shows the patterns in the visuals; it isn't a precise measurement.
+Tracks A, C and D read the colours and brightness of NASA's *rendered* images and videos, not the raw scientific datasets. Their music shows the patterns in the visuals; it isn't a precise measurement.
+
+Track B is the exception: it's made from the GISTEMP dataset behind the visualization (`zonal/data/gistemp_zonal.csv`), so every note comes from a measured temperature anomaly.
