@@ -33,7 +33,7 @@ All three run the same code from `main`. If one doesn't load, use another.
 
 | Option | Link | Best for |
 |---|---|---|
-| **Online (Vercel)**, recommended | **https://&lt;project&gt;.vercel.app** | Anyone: nothing to install, always up |
+| **Online (Vercel)**, recommended | **https://nasaversesidequestorsjukebox.vercel.app/homepageUI/** | Anyone: nothing to install, always up |
 | **Mirror** (Ryan's server) | https://ryan.tail8af10e.ts.net/ | A backup if the Vercel link is unreachable |
 | **Run it locally** | http://localhost:8000 | Working offline, or changing the code or audio. See [Running it locally](#running-it-locally) |
 
@@ -82,7 +82,7 @@ Vercel hosts the site straight from this GitHub repo. There's no build step.
 **Setting it up (once, by the repo owner)**
 1. Sign in to Vercel with the GitHub account that owns this repo, then **Add New → Project** and import `NASAVERSE-SIDEQUESTORS-JUKEBOX`.
 2. Set **Framework Preset** to **Other**. Leave **Build Command** empty, and leave **Output Directory** as the repository root.
-3. Press **Deploy**. Vercel gives you the public link, e.g. `https://<project>.vercel.app`. The root `index.html` redirects to the jukebox.
+3. Press **Deploy**. Vercel gives you the public link, e.g. `https://nasaversesidequestorsjukebox.vercel.app/homepageUI/`. The root `index.html` redirects to the jukebox.
 
 **Updating it**
 - Every merge into `main` redeploys the site automatically.
