@@ -1,0 +1,13 @@
+# Files the website doesn't use. Vercel skips these when deploying, so uploads stay small.
+# The site only needs: index.html, homepageUI/, the track MP3s, and the track videos.
+
+# 8K NASA source frames (the site uses the small JPGs in homepageUI/assets/nightlights/)
+nightlight/frames/
+
+# Full-quality audio masters and scores (the site plays the MP3s)
+*.wav
+*.mid
+
+# Scripts and extracted data, only needed to re-make the audio
+*.py
+*.csv

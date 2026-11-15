@@ -15,10 +15,12 @@ Earth Jukebox turns four NASA visualizations into music you can hear, styled as 
 
 | # | Track | NASA data | Audio file |
 |---|---|---|---|
-| A | The World After Dark | Earth's night lights, 2012–2023 | `nightlight/nightlights_output/nightlights.wav` |
-| B | A Planet With a Fever | Temperature anomalies in 8 latitude bands, 1880–2023 (GISTEMP) | `zonal/output/zonal_down.wav` |
-| C | The Planet Breathing | Net ecosystem exchange of CO₂ on land, 2003–2017 | `nee/output/nee.wav` |
-| D | The Storm Gathers | Lightning seen from the International Space Station, 2017–2023 | `lightning/output/final_soundscape.wav` |
+| A | The World After Dark | Earth's night lights, 2012–2023 | `nightlight/nightlights_output/nightlights.mp3` |
+| B | A Planet With a Fever | Temperature anomalies in 8 latitude bands, 1880–2023 (GISTEMP) | `zonal/output/zonal_down.mp3` |
+| C | The Planet Breathing | Net ecosystem exchange of CO₂ on land, 2003–2017 | `nee/output/nee.mp3` |
+| D | The Storm Gathers | Lightning seen from the International Space Station, 2017–2023 | `lightning/output/final_soundscape.mp3` |
+
+The website plays the MP3s, which are about ten times smaller than the WAVs and load much faster. The full-quality WAV masters stay next to each MP3.
 
 ---
 
@@ -43,12 +45,31 @@ You need **Python 3** (only to start a small local web server) and a modern brow
 4. When you're done, press `Ctrl + C` in the terminal to stop the server.
 
 > **Why a server?** Opening `index.html` by double-clicking it won't work. Browsers block pages opened as files from loading the audio, video and caption files, so the tracks won't play.
+>
+> Use `localhost` in the address, not your computer's network IP. Python's server can't jump to the middle of a file, so on `localhost` the jukebox downloads each track in full first to make seeking work. Anywhere else, such as the Vercel site, it assumes a proper web server and streams the files instead.
 
 ### Using the jukebox
 - **Home page:** use the arrows or the dial to pick a track, then press **Play** to open it.
 - **Track page:** play, pause and seek. The NASA video or images move in step with the music.
 - **▶ LISTEN** buttons: the narrator reads "What you are hearing" or "Describe this visual". The music dips while they speak.
 - **Play Story:** the narrator introduces each track with one line of the story, then the track plays, from A to D. Captions appear under the visual. Press **Home** to leave the story.
+
+---
+
+## Hosting it online (Vercel)
+
+The jukebox is a static website (HTML, JavaScript and media files), so it's hosted on [Vercel](https://vercel.com) straight from this GitHub repo. There's no build step.
+
+**Setting it up (once, by the repo owner)**
+1. Sign in to Vercel with the GitHub account that owns this repo, then **Add New → Project** and import `NASAVERSE-SIDEQUESTORS-JUKEBOX`.
+2. Set **Framework Preset** to **Other**. Leave **Build Command** empty, and leave **Output Directory** as the repository root.
+3. Press **Deploy**. Vercel gives you the public link, e.g. `https://<project>.vercel.app`. The root `index.html` redirects to the jukebox.
+
+**Updating it**
+- Every merge into `main` redeploys the site automatically.
+- Every pull request gets its own preview link, so you can check a change before merging.
+
+**What gets uploaded:** `.vercelignore` keeps out files the website doesn't use (the 8K NASA source frames, WAV masters, scripts and CSVs), so deploys stay small. If you add a new file the site needs, make sure `.vercelignore` doesn't exclude it.
 
 ---
 
@@ -75,6 +96,11 @@ Each track folder follows the same pattern: `data/` holds the NASA source and ex
 ## Re-making the audio (optional)
 
 The finished audio is already in the repo, so you only need this if you change a track. Run the commands from the repository root unless a step says otherwise.
+
+> **After re-making any track, update its MP3 too.** The website plays the MP3, not the WAV. With [ffmpeg](https://ffmpeg.org/) installed, run this with your track's WAV path:
+> ```bash
+> ffmpeg -y -i zonal/output/zonal_down.wav -b:a 192k zonal/output/zonal_down.mp3
+> ```
 
 **Track A: The World After Dark**
 ```bash
