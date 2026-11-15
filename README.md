@@ -5,8 +5,11 @@ Our entry for the **NASA Space Apps Challenge 2026: The Earth Information Jukebo
 Meet the Team: 
 
 Yuting: The World After Dark, twelve years of Earth’s night lights, and the first version of the jukebox interface
+
 Ryan: A Planet With a Fever, 144 years of temperature from pole to pole
+
 Agracia: The Planet Breathing, the land absorbing and releasing CO₂, plus the narrated Play Story mode and the final interface
+
 Angela: The Storm Gathers, six years of lightning seen from the International Space Station
 
 Together, the four tracks tell one story: a brighter, warmer planet whose land is struggling to keep breathing, and whose skies are full of storms.
@@ -24,7 +27,19 @@ The website plays the MP3s, which are about ten times smaller than the WAVs and 
 
 ---
 
-## How to run it
+## Three ways to open it
+
+All three run the same code from `main`. If one doesn't load, use another.
+
+| Option | Link | Best for |
+|---|---|---|
+| **Online (Vercel)**, recommended | **https://&lt;project&gt;.vercel.app** | Anyone: nothing to install, always up |
+| **Mirror** (Ryan's server) | https://ryan.tail8af10e.ts.net/ | A backup if the Vercel link is unreachable |
+| **Run it locally** | http://localhost:8000 | Working offline, or changing the code or audio. See [Running it locally](#running-it-locally) |
+
+---
+
+## Running it locally
 
 You need **Python 3** (only to start a small local web server) and a modern browser (Chrome, Edge, Firefox or Safari). Nothing needs to be installed or built.
 
@@ -46,7 +61,7 @@ You need **Python 3** (only to start a small local web server) and a modern brow
 
 > **Why a server?** Opening `index.html` by double-clicking it won't work. Browsers block pages opened as files from loading the audio, video and caption files, so the tracks won't play.
 >
-> Use `localhost` in the address, not your computer's network IP. Python's server can't jump to the middle of a file, so on `localhost` the jukebox downloads each track in full first to make seeking work. Anywhere else, such as the Vercel site, it assumes a proper web server and streams the files instead.
+> Use `localhost` in the address, not your computer's network IP. Python's server can't jump to the middle of a file, so on `localhost` the jukebox downloads each track in full first to make seeking work. Anywhere else, such as the Vercel site or the mirror, it assumes a proper web server and streams the files instead.
 
 ### Using the jukebox
 - **Home page:** use the arrows or the dial to pick a track, then press **Play** to open it.
@@ -56,9 +71,13 @@ You need **Python 3** (only to start a small local web server) and a modern brow
 
 ---
 
-## Hosting it online (Vercel)
+## Hosting it online
 
-The jukebox is a static website (HTML, JavaScript and media files), so it's hosted on [Vercel](https://vercel.com) straight from this GitHub repo. There's no build step.
+The jukebox is a static website (HTML, JavaScript and media files), so hosting it just means serving the repository folder. It's hosted in two places: Vercel is the main link, and Ryan's server runs a mirror as a backup.
+
+### Vercel (main link)
+
+Vercel hosts the site straight from this GitHub repo. There's no build step.
 
 **Setting it up (once, by the repo owner)**
 1. Sign in to Vercel with the GitHub account that owns this repo, then **Add New → Project** and import `NASAVERSE-SIDEQUESTORS-JUKEBOX`.
@@ -70,6 +89,30 @@ The jukebox is a static website (HTML, JavaScript and media files), so it's host
 - Every pull request gets its own preview link, so you can check a change before merging.
 
 **What gets uploaded:** `.vercelignore` keeps out files the website doesn't use (the 8K NASA source frames, WAV masters, scripts and CSVs), so deploys stay small. If you add a new file the site needs, make sure `.vercelignore` doesn't exclude it.
+
+### Mirror on Ryan's server (Tailscale Funnel)
+
+A copy of the site runs on a home server (Ubuntu with CasaOS), served by nginx in Docker and made public with [Tailscale Funnel](https://ryan.tail8af10e.ts.net/). The setup files are in `deploy/`.
+
+**Setting it up**
+1. Clone the repo onto the server:
+   ```bash
+   sudo git clone https://github.com/agraciayyx/NASAVERSE-SIDEQUESTORS-JUKEBOX.git /DATA/AppData/earth-jukebox
+   ```
+2. Start nginx on port 8080, using either CasaOS (App Store → **Custom Install** → **Import** → paste in `deploy/docker-compose.yml`) or the command line:
+   ```bash
+   sudo docker compose -f /DATA/AppData/earth-jukebox/deploy/docker-compose.yml up -d
+   ```
+   If you cloned somewhere else, change the two paths under `volumes:` in `docker-compose.yml` first.
+3. In the [Tailscale admin console](https://login.tailscale.com/admin), turn on **HTTPS Certificates** (under DNS) and allow **Funnel** for the server. Then run:
+   ```bash
+   sudo tailscale funnel --bg 8080
+   ```
+   Tailscale prints the public `https://<server-name>.<tailnet>.ts.net` link. `tailscale funnel status` shows it again; `sudo tailscale funnel reset` takes the mirror offline.
+
+**Updating it:** after a merge into `main`, run `cd /DATA/AppData/earth-jukebox && sudo git pull`. No restart is needed.
+
+**What `deploy/nginx.conf` does:** it hides the repo's `.git` history and the scripts and source frames, lets browsers cache media for a day, and compresses the page code. nginx supports seeking in audio and video, so tracks stream instead of downloading whole first.
 
 ---
 
@@ -86,7 +129,9 @@ NASAVERSE-SIDEQUESTORS-JUKEBOX/
 ├── nightlight/             # Track A: frames/ (NASA images), sonify_nightlights.py, nightlights_output/
 ├── zonal/                  # Track B: data/, main/main.py, output/
 ├── nee/                    # Track C: data/, main/, output/
-└── lightning/              # Track D: data/, main/, output/
+├── lightning/              # Track D: data/, main/, output/
+├── deploy/                 # mirror hosting: nginx.conf + docker-compose.yml
+└── .vercelignore           # files Vercel doesn't need to upload
 ```
 
 Each track folder follows the same pattern: `data/` holds the NASA source and extracted numbers, `main/` holds the scripts, and `output/` holds the finished audio.

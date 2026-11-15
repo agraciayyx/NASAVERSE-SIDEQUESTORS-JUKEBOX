@@ -11,3 +11,6 @@ nightlight/frames/
 # Scripts and extracted data, only needed to re-make the audio
 *.py
 *.csv
+
+# Setup files for the self-hosted mirror
+deploy/
