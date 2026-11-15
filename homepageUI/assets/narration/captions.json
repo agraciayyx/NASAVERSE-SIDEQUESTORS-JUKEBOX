@@ -1,0 +1,255 @@
+{
+ "a_intro": [
+  {
+   "start": 0.0,
+   "end": 2.13,
+   "text": "Our story begins at night."
+  },
+  {
+   "start": 2.58,
+   "end": 10.6,
+   "text": "In just twelve years, the glow of towns and cities has spread across the planet, tracing where people live and build."
+  },
+  {
+   "start": 11.05,
+   "end": 14.6,
+   "text": "Listen as the light grows and the notes climb."
+  }
+ ],
+ "a_hearing": [
+  {
+   "start": 0.0,
+   "end": 2.71,
+   "text": "Listen to the planet after dark."
+  },
+  {
+   "start": 3.16,
+   "end": 12.01,
+   "text": "NASA satellites photographed Earth's lights at night, every year from 2012 to 2023."
+  },
+  {
+   "start": 12.46,
+   "end": 18.01,
+   "text": "We divided each image into eight regions, and gave each region a voice."
+  },
+  {
+   "start": 18.46,
+   "end": 22.3,
+   "text": "As a region glows brighter, its note climbs higher."
+  },
+  {
+   "start": 22.75,
+   "end": 25.8,
+   "text": "The brighter the lights, the louder it sings."
+  },
+  {
+   "start": 26.25,
+   "end": 28.72,
+   "text": "Twelve years, two seconds each."
+  },
+  {
+   "start": 29.17,
+   "end": 32.27,
+   "text": "The chorus of a world that never sleeps."
+  }
+ ],
+ "a_visual": [
+  {
+   "start": 0.0,
+   "end": 3.11,
+   "text": "This is our world at night, seen from orbit."
+  },
+  {
+   "start": 3.56,
+   "end": 7.68,
+   "text": "Every point of light is a city, a highway, a harbour."
+  },
+  {
+   "start": 8.13,
+   "end": 10.95,
+   "text": "A place where people live and work."
+  },
+  {
+   "start": 11.4,
+   "end": 20.74,
+   "text": "From 2012 to 2023, the image moves forward one year at a time, in step with the music."
+  },
+  {
+   "start": 21.19,
+   "end": 24.61,
+   "text": "Watch the lights spread, and listen to them grow."
+  }
+ ],
+ "b_intro": [
+  {
+   "start": 0.0,
+   "end": 4.52,
+   "text": "Behind that growing glow is a rising demand for energy."
+  },
+  {
+   "start": 4.97,
+   "end": 8.75,
+   "text": "As greenhouse gases build up, the planet warms."
+  },
+  {
+   "start": 9.2,
+   "end": 15.64,
+   "text": "Listen to a hundred and forty-four years of changing temperature, from pole to pole."
+  }
+ ],
+ "b_hearing": [
+  {
+   "start": 0.0,
+   "end": 5.61,
+   "text": "For a hundred and forty-four years, scientists have taken the planet's temperature."
+  },
+  {
+   "start": 6.06,
+   "end": 12.14,
+   "text": "Here, eight bands of latitude, from the Arctic to Antarctica, each play a single note."
+  },
+  {
+   "start": 12.59,
+   "end": 16.6,
+   "text": "The warmer a band becomes, the lower its note falls."
+  },
+  {
+   "start": 17.05,
+   "end": 21.42,
+   "text": "Beneath them, a heartbeat quickens as the whole world warms."
+  },
+  {
+   "start": 21.87,
+   "end": 25.42,
+   "text": "And slowly, the harmony begins to fall apart."
+  },
+  {
+   "start": 25.87,
+   "end": 27.94,
+   "text": "Notes drift out of tune."
+  },
+  {
+   "start": 28.39,
+   "end": 29.47,
+   "text": "They clash."
+  },
+  {
+   "start": 29.92,
+   "end": 31.12,
+   "text": "They tremble."
+  },
+  {
+   "start": 31.57,
+   "end": 34.79,
+   "text": "This is the sound of a warming planet."
+  }
+ ],
+ "b_visual": [
+  {
+   "start": 0.0,
+   "end": 11.07,
+   "text": "This is NASA's temperature record, from 1880 to 2023, divided into eight bands from pole to pole."
+  },
+  {
+   "start": 11.52,
+   "end": 24.43,
+   "text": "Each row is a band of the Earth, and each mark is a year, placed by how much warmer or cooler it was than the average from 1951 to 1980."
+  },
+  {
+   "start": 24.88,
+   "end": 29.83,
+   "text": "As the decades pass, the newest marks glow red and creep to the right."
+  },
+  {
+   "start": 30.28,
+   "end": 36.66,
+   "text": "By 2023, the Arctic, on the top row, has warmed the most of all."
+  }
+ ],
+ "c_intro": [
+  {
+   "start": 0.0,
+   "end": 4.48,
+   "text": "Yet the living land fights back, breathing in our carbon every summer."
+  },
+  {
+   "start": 4.93,
+   "end": 13.72,
+   "text": "But when drought takes hold, as it did in 2015 and 2016, its breath begins to falter."
+  }
+ ],
+ "c_hearing": [
+  {
+   "start": 0.0,
+   "end": 2.41,
+   "text": "Every year, the planet breathes."
+  },
+  {
+   "start": 2.86,
+   "end": 8.19,
+   "text": "In the northern summer, forests and fields draw carbon dioxide from the air."
+  },
+  {
+   "start": 8.64,
+   "end": 10.99,
+   "text": "In winter, they let it go."
+  },
+  {
+   "start": 11.44,
+   "end": 18.78,
+   "text": "Here, strings follow that breath, month by month, from 2003 to 2017."
+  },
+  {
+   "start": 19.23,
+   "end": 23.11,
+   "text": "A solo violin climbs as the land breathes in."
+  },
+  {
+   "start": 23.56,
+   "end": 27.62,
+   "text": "Cellos and racing violins swell as it breathes out."
+  },
+  {
+   "start": 28.07,
+   "end": 34.0,
+   "text": "Each January, a timpani strikes, louder in the years the land absorbed less."
+  },
+  {
+   "start": 34.45,
+   "end": 40.91,
+   "text": "Listen for 2016 and 2017, when the breath falters."
+  }
+ ],
+ "c_visual": [
+  {
+   "start": 0.0,
+   "end": 3.11,
+   "text": "This is NASA's map of the living land."
+  },
+  {
+   "start": 3.56,
+   "end": 7.47,
+   "text": "Green marks places absorbing carbon dioxide."
+  },
+  {
+   "start": 7.92,
+   "end": 10.88,
+   "text": "Magenta marks places releasing it."
+  },
+  {
+   "start": 11.33,
+   "end": 14.73,
+   "text": "Month by month, the colours follow the seasons."
+  },
+  {
+   "start": 15.18,
+   "end": 20.08,
+   "text": "Green sweeps across the north every summer, and fades each winter."
+  },
+  {
+   "start": 20.53,
+   "end": 30.35,
+   "text": "In 2015 and 2016, watch the Amazon turn magenta, as a severe drought grips the rainforest."
+  }
+ ]
+}
