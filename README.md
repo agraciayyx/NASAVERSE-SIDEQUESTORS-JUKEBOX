@@ -5,8 +5,11 @@ Our entry for the **NASA Space Apps Challenge 2026: The Earth Information Jukebo
 Meet the Team: 
 
 Yuting: The World After Dark, twelve years of Earth’s night lights, and the first version of the jukebox interface
+
 Ryan: A Planet With a Fever, 144 years of temperature from pole to pole
+
 Agracia: The Planet Breathing, the land absorbing and releasing CO₂, plus the narrated Play Story mode and the final interface
+
 Angela: The Storm Gathers, six years of lightning seen from the International Space Station
 
 Together, the four tracks tell one story: a brighter, warmer planet whose land is struggling to keep breathing, and whose skies are full of storms.
@@ -15,14 +18,28 @@ Earth Jukebox turns four NASA visualizations into music you can hear, styled as 
 
 | # | Track | NASA data | Audio file |
 |---|---|---|---|
-| A | The World After Dark | Earth's night lights, 2012–2023 | `nightlight/nightlights_output/nightlights.wav` |
-| B | A Planet With a Fever | Temperature anomalies in 8 latitude bands, 1880–2023 (GISTEMP) | `zonal/output/zonal_down.wav` |
-| C | The Planet Breathing | Net ecosystem exchange of CO₂ on land, 2003–2017 | `nee/output/nee.wav` |
-| D | The Storm Gathers | Lightning seen from the International Space Station, 2017–2023 | `lightning/output/final_soundscape.wav` |
+| A | The World After Dark | Earth's night lights, 2012–2023 | `nightlight/nightlights_output/nightlights.mp3` |
+| B | A Planet With a Fever | Temperature anomalies in 8 latitude bands, 1880–2023 (GISTEMP) | `zonal/output/zonal_down.mp3` |
+| C | The Planet Breathing | Net ecosystem exchange of CO₂ on land, 2003–2017 | `nee/output/nee.mp3` |
+| D | The Storm Gathers | Lightning seen from the International Space Station, 2017–2023 | `lightning/output/final_soundscape.mp3` |
+
+The website plays the MP3s, which are about ten times smaller than the WAVs and load much faster. The full-quality WAV masters stay next to each MP3.
 
 ---
 
-## How to run it
+## Three ways to open it
+
+All three run the same code from `main`. If one doesn't load, use another.
+
+| Option | Link | Best for |
+|---|---|---|
+| **Online (Vercel)**, recommended | **https://nasaversesidequestorsjukebox.vercel.app/homepageUI/** | Anyone: nothing to install, always up |
+| **Mirror** (Ryan's server) | https://ryan.tail8af10e.ts.net/ | A backup if the Vercel link is unreachable |
+| **Run it locally** | http://localhost:8000 | Working offline, or changing the code or audio. See [Running it locally](#running-it-locally) |
+
+---
+
+## Running it locally
 
 You need **Python 3** (only to start a small local web server) and a modern browser (Chrome, Edge, Firefox or Safari). Nothing needs to be installed or built.
 
@@ -43,12 +60,59 @@ You need **Python 3** (only to start a small local web server) and a modern brow
 4. When you're done, press `Ctrl + C` in the terminal to stop the server.
 
 > **Why a server?** Opening `index.html` by double-clicking it won't work. Browsers block pages opened as files from loading the audio, video and caption files, so the tracks won't play.
+>
+> Use `localhost` in the address, not your computer's network IP. Python's server can't jump to the middle of a file, so on `localhost` the jukebox downloads each track in full first to make seeking work. Anywhere else, such as the Vercel site or the mirror, it assumes a proper web server and streams the files instead.
 
 ### Using the jukebox
 - **Home page:** use the arrows or the dial to pick a track, then press **Play** to open it.
 - **Track page:** play, pause and seek. The NASA video or images move in step with the music.
 - **▶ LISTEN** buttons: the narrator reads "What you are hearing" or "Describe this visual". The music dips while they speak.
 - **Play Story:** the narrator introduces each track with one line of the story, then the track plays, from A to D. Captions appear under the visual. Press **Home** to leave the story.
+
+---
+
+## Hosting it online
+
+The jukebox is a static website (HTML, JavaScript and media files), so hosting it just means serving the repository folder. It's hosted in two places: Vercel is the main link, and Ryan's server runs a mirror as a backup.
+
+### Vercel (main link)
+
+Vercel hosts the site straight from this GitHub repo. There's no build step.
+
+**Setting it up (once, by the repo owner)**
+1. Sign in to Vercel with the GitHub account that owns this repo, then **Add New → Project** and import `NASAVERSE-SIDEQUESTORS-JUKEBOX`.
+2. Set **Framework Preset** to **Other**. Leave **Build Command** empty, and leave **Output Directory** as the repository root.
+3. Press **Deploy**. Vercel gives you the public link, e.g. `https://<project>.vercel.app`. The root `index.html` redirects to the jukebox.
+
+**Updating it**
+- Every merge into `main` redeploys the site automatically.
+- Every pull request gets its own preview link, so you can check a change before merging.
+
+**What gets uploaded:** `.vercelignore` keeps out files the website doesn't use (the 8K NASA source frames, WAV masters, scripts and CSVs), so deploys stay small. If you add a new file the site needs, make sure `.vercelignore` doesn't exclude it.
+
+### Mirror on Ryan's server (Tailscale Funnel)
+
+A copy of the site runs on a home server (Ubuntu with CasaOS), served by nginx in Docker and made public with [Tailscale Funnel](https://ryan.tail8af10e.ts.net/). The setup files are in `deploy/`.
+
+**Setting it up**
+1. Clone the repo onto the server:
+   ```bash
+   sudo git clone https://github.com/agraciayyx/NASAVERSE-SIDEQUESTORS-JUKEBOX.git /DATA/AppData/earth-jukebox
+   ```
+2. Start nginx on port 8080, using either CasaOS (App Store → **Custom Install** → **Import** → paste in `deploy/docker-compose.yml`) or the command line:
+   ```bash
+   sudo docker compose -f /DATA/AppData/earth-jukebox/deploy/docker-compose.yml up -d
+   ```
+   If you cloned somewhere else, change the two paths under `volumes:` in `docker-compose.yml` first.
+3. In the [Tailscale admin console](https://login.tailscale.com/admin), turn on **HTTPS Certificates** (under DNS) and allow **Funnel** for the server. Then run:
+   ```bash
+   sudo tailscale funnel --bg 8080
+   ```
+   Tailscale prints the public `https://<server-name>.<tailnet>.ts.net` link. `tailscale funnel status` shows it again; `sudo tailscale funnel reset` takes the mirror offline.
+
+**Updating it:** after a merge into `main`, run `cd /DATA/AppData/earth-jukebox && sudo git pull`. No restart is needed.
+
+**What `deploy/nginx.conf` does:** it hides the repo's `.git` history and the scripts and source frames, lets browsers cache media for a day, and compresses the page code. nginx supports seeking in audio and video, so tracks stream instead of downloading whole first.
 
 ---
 
@@ -65,7 +129,9 @@ NASAVERSE-SIDEQUESTORS-JUKEBOX/
 ├── nightlight/             # Track A: frames/ (NASA images), sonify_nightlights.py, nightlights_output/
 ├── zonal/                  # Track B: data/, main/main.py, output/
 ├── nee/                    # Track C: data/, main/, output/
-└── lightning/              # Track D: data/, main/, output/
+├── lightning/              # Track D: data/, main/, output/
+├── deploy/                 # mirror hosting: nginx.conf + docker-compose.yml
+└── .vercelignore           # files Vercel doesn't need to upload
 ```
 
 Each track folder follows the same pattern: `data/` holds the NASA source and extracted numbers, `main/` holds the scripts, and `output/` holds the finished audio.
@@ -75,6 +141,11 @@ Each track folder follows the same pattern: `data/` holds the NASA source and ex
 ## Re-making the audio (optional)
 
 The finished audio is already in the repo, so you only need this if you change a track. Run the commands from the repository root unless a step says otherwise.
+
+> **After re-making any track, update its MP3 too.** The website plays the MP3, not the WAV. With [ffmpeg](https://ffmpeg.org/) installed, run this with your track's WAV path:
+> ```bash
+> ffmpeg -y -i zonal/output/zonal_down.wav -b:a 192k zonal/output/zonal_down.mp3
+> ```
 
 **Track A: The World After Dark**
 ```bash
@@ -140,8 +211,10 @@ Edit `homepageUI/tracks.js`. Each track has its name (`subtitle`), card line (`d
 All visualizations are by **NASA's Scientific Visualization Studio (SVS)**.
 
 - Track A: Earth at night, 2012–2023: [svs.gsfc.nasa.gov/5276](https://svs.gsfc.nasa.gov/5276/) (Kel Elkins)
-- Track B: GISTEMP zonal temperature anomalies, 1880–2023: [svs.gsfc.nasa.gov/5209](https://svs.gsfc.nasa.gov/5209)
+- Track B: GISTEMP zonal temperature anomalies, 1880–2023: [svs.gsfc.nasa.gov/5209](https://svs.gsfc.nasa.gov/5209) (Mark SubbaRao). Data: NASA GISS Surface Temperature Analysis (GISTEMP v4), [data.giss.nasa.gov/gistemp](https://data.giss.nasa.gov/gistemp/)
 - Track C: Net ecosystem exchange of CO₂: [svs.gsfc.nasa.gov/5047](https://svs.gsfc.nasa.gov/5047)
 - Track D: Lightning events detected from the ISS, 2017–2023: [svs.gsfc.nasa.gov/5011](https://svs.gsfc.nasa.gov/5011/)
 
-Our scripts read the colours and brightness of NASA's *rendered* images and videos, not the raw scientific datasets. The music shows the patterns in the visuals; it isn't a precise measurement.
+Tracks A, C and D read the colours and brightness of NASA's *rendered* images and videos, not the raw scientific datasets. Their music shows the patterns in the visuals; it isn't a precise measurement.
+
+Track B is the exception: it's made from the GISTEMP dataset behind the visualization (`zonal/data/gistemp_zonal.csv`), so every note comes from a measured temperature anomaly.

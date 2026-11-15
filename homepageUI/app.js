@@ -177,8 +177,12 @@
   }
   // Python's http.server can't serve parts of a file, so the browser can't seek in a WAV or video it streams from it.
   // Loading each file whole into memory first makes seeking work with the plain server.
+  // Only needed when running locally: a real web server (Vercel, for the hosted site) supports seeking, so there
+  // the browser streams the file directly and playback starts straight away instead of after a full download.
+  const isLocal=['localhost','127.0.0.1','[::1]',''].includes(location.hostname);
   const mediaCache={};
   function mediaURL(path){
+    if(!isLocal)return Promise.resolve(path);
     if(!mediaCache[path])mediaCache[path]=fetch(path).then(r=>{if(!r.ok)throw new Error(`${r.status} ${path}`);return r.blob();}).then(blob=>URL.createObjectURL(blob));
     mediaCache[path].catch(()=>delete mediaCache[path]);
     return mediaCache[path];
@@ -207,10 +211,10 @@
   audio.addEventListener('seeked',updateTime);
   audio.addEventListener('timeupdate',updateTime);audio.addEventListener('loadedmetadata',()=>{updateTime();status();});
   audio.addEventListener('play',status);audio.addEventListener('pause',status);
-  audio.addEventListener('error',()=>{if(loaded>=0){$('player-status').textContent='Audio file unavailable · check tracks.js';notify('Audio file unavailable. Check the configured WAV path.');}});
+  audio.addEventListener('error',()=>{if(loaded>=0){$('player-status').textContent='Audio file unavailable · check tracks.js';notify('Audio file unavailable. Check the configured audio path in tracks.js.');}});
   audio.addEventListener('ended',()=>{if(story){const next=tracks.findIndex((t,i)=>i>selected&&t.src);if(next>=0)storyStep(next);else{story=false;status();notify('Story complete. Thanks for listening.');}}else status();});
   window.addEventListener('hashchange',route);
-  document.addEventListener('keydown',e=>{if(story||introPlaying)return;if(/INPUT|TEXTAREA|BUTTON|A/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle();}if(e.code==='ArrowRight')select(selected+1);if(e.code==='ArrowLeft')select(selected-1);});
+  document.addEventListener('keydown',e=>{if(story||introPlaying)return;if(/^(INPUT|TEXTAREA|BUTTON|A)$/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle();}if(e.code==='ArrowRight')select(selected+1);if(e.code==='ArrowLeft')select(selected-1);});
   const video=$('track-video');
   video.addEventListener('loadedmetadata',updateTime);
   video.addEventListener('error',()=>{if(!video.dataset.src)return;video.hidden=true;$('visual-caption').textContent='ILLUSTRATIVE SIGNAL · VIDEO FILE MISSING';console.warn('Video not found:',video.dataset.src);});
