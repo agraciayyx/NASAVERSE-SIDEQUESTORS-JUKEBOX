@@ -1,10 +1,11 @@
 # Earth Jukebox: turns NASA GISTEMP zonal temperatures into a 30 s soundtrack
 # for the SVS 5209 video (https://svs.gsfc.nasa.gov/5209).
 
-# - 8 latitude bands -> 8 notes on the A minor pentatonic scale (warmer = higher)
+# - 8 latitude bands -> 8 notes on the A minor pentatonic scale (warmer = lower)
 # - global temperature -> heartbeat, brighter tone, volume swell, drone
+# - global temperature -> harmony decay: notes drift out of tune, clash and shake
 
-# tweak the settings then run >  python main.py > to get output at output/zonal_pentatonic.wav
+# tweak the settings then run >  python main.py > to get output at output/zonal_down.wav
 
 
 import csv
@@ -14,7 +15,7 @@ import struct
 import wave
 
 CSV_PATH = "data/gistemp_zonal.csv"
-OUT_WAV = "output/zonal_pentatonic.wav"
+OUT_WAV = "output/zonal_down.wav"
 BANDS = ["64N-90N", "44N-64N", "24N-44N", "EQU-24N", "24S-EQU", "44S-24S", "64S-44S", "90S-64S"]
 
 # video timing
@@ -35,11 +36,18 @@ WARMTH_SMOOTH_YEARS = 5    # average temperature over this many years
 WARMTH_CURVE = 1.5         # >1 = intensity builds later, <1 = earlier
 
 HEARTBEAT_BPM = (55, 140)        # (coolest, warmest)
-HEARTBEAT_VOLUME = (0.10, 0.55)  # (coolest, warmest)
+HEARTBEAT_VOLUME = (0.10, 0.65)  # (coolest, warmest)
 BRIGHTNESS = 1.0                 # how harsh the notes get by 2023 (0 = never)
 SWELL = (0.55, 1.0)              # note volume multiplier (coolest, warmest)
 DRONE_STARTS_AT = 0.3            # deg C global anomaly when the drone fades in
 DRONE_VOLUME = 0.22
+
+# harmony decay - the music starts in harmony and falls apart as it warms
+DETUNE_CENTS = 35                # how far notes drift out of tune by 2023 (100 = a full semitone, 0 = never)
+CLASH_STARTS_AT = 0.4            # warmth (0 = coolest, 1 = warmest) when clashing notes creep in
+CLASH_VOLUME = 0.6               # clashing note loudness vs the main note, at the warmest
+TREMOLO_DEPTH = 0.5              # how much the notes shake at the warmest (0 = none, 1 = max)
+TREMOLO_RATE = (4, 9)            # shakes per second (coolest, warmest)
 
 
 def blend(pair, x):
@@ -88,8 +96,13 @@ def to_note_steps(values, low, high):
 
 
 
-def add_note(left, right, midi, start, length, volume, pan, brightness):
-    freq = 440 * 2 ** ((midi - 69) / 12)
+# one held note. the decay settings make it sound more "wrong" as it warms:
+#   detune_cents  - pushes the note out of tune
+#   clash         - (semitones, level): a second note that clashes with the main one
+#   tremolo       - (depth, rate): makes the volume shake
+def add_note(left, right, midi, start, length, volume, pan, brightness, detune_cents, clash, tremolo):
+    freq = 440 * 2 ** ((midi - 69) / 12) * 2 ** (detune_cents / 1200)
+    clash_freq = freq * 2 ** (clash[0] / 12)
     first = int(start * SAMPLE_RATE)
     hold = int(length * SAMPLE_RATE)
     release = int(0.25 * SAMPLE_RATE)
@@ -98,9 +111,11 @@ def add_note(left, right, midi, start, length, volume, pan, brightness):
         env = min(1, t / 0.01) * (0.3 + 0.7 * math.exp(-t / 0.4))
         if i > hold:
             env *= 1 - (i - hold) / release
+        env *= 1 - tremolo[0] * (0.5 + 0.5 * math.sin(2 * math.pi * tremolo[1] * t))
         w = 2 * math.pi * freq * t
         tone = math.sin(w) + 0.3 * math.sin(2 * w) + brightness * (0.35 * math.sin(3 * w) + 0.25 * math.sin(4 * w))
-        s = tone * env * volume / (1.3 + 0.6 * brightness)
+        tone += clash[1] * math.sin(2 * math.pi * clash_freq * t)
+        s = tone * env * volume / (1.3 + 0.6 * brightness + clash[1])
         left[first + i] += s * (1 - pan)
         right[first + i] += s * pan
 
@@ -155,7 +170,10 @@ def main():
     # 8 band notes: strike a note only when the band's pitch changes
     for b in range(len(BANDS)):
         steps = to_note_steps([year[b] for year in bands], low, high)
+        steps = [len(SCALE) - 1 - s for s in steps]         # flip: warmer = lower
         pan = 0.1 + 0.8 * b / (len(BANDS) - 1)              # Arctic left, Antarctic right
+        detune_sign = 1 if b % 2 == 0 else -1               # neighbouring bands drift apart
+        clash_semitones = 1 if b % 2 == 0 else 6            # semitone rub or tritone
         i = 0
         while i < len(steps):
             j = i
@@ -164,8 +182,12 @@ def main():
             start = i * SECONDS_PER_YEAR
             end = (j + 1) * SECONDS_PER_YEAR if j + 1 < len(steps) else VIDEO_LENGTH
             w = warmth_at(start, glob)
+            clash_level = CLASH_VOLUME * max(0, (w - CLASH_STARTS_AT) / (1 - CLASH_STARTS_AT))
             add_note(left, right, SCALE[steps[i]], start, end - start,
-                     NOTE_VOLUME * blend(SWELL, w), pan, BRIGHTNESS * w)
+                     NOTE_VOLUME * blend(SWELL, w), pan, BRIGHTNESS * w,
+                     detune_cents=detune_sign * DETUNE_CENTS * w,
+                     clash=(clash_semitones, clash_level),
+                     tremolo=(TREMOLO_DEPTH * w, blend(TREMOLO_RATE, w)))
             i = j + 1
 
     add_heartbeat(left, right, glob)
