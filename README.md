@@ -27,14 +27,13 @@ The website plays the MP3s, which are about ten times smaller than the WAVs and 
 
 ---
 
-## Three ways to open it
+## Two ways to open it
 
-All three run the same code from `main`. If one doesn't load, use another.
+All two run the same code from `main`. If one doesn't load, use another.
 
 | Option | Link | Best for |
 |---|---|---|
 | **Online (Vercel)**, recommended | **https://nasaversesidequestorsjukebox.vercel.app/homepageUI/** | Anyone: nothing to install, always up |
-| **Mirror** (Ryan's server) | https://ryan.tail8af10e.ts.net/ | A backup if the Vercel link is unreachable |
 | **Run it locally** | http://localhost:8000 | Working offline, or changing the code or audio. See [Running it locally](#running-it-locally) |
 
 ---
@@ -90,30 +89,6 @@ Vercel hosts the site straight from this GitHub repo. There's no build step.
 
 **What gets uploaded:** `.vercelignore` keeps out files the website doesn't use (the 8K NASA source frames, WAV masters, scripts and CSVs), so deploys stay small. If you add a new file the site needs, make sure `.vercelignore` doesn't exclude it.
 
-### Mirror on Ryan's server (Tailscale Funnel)
-
-A copy of the site runs on a home server (Ubuntu with CasaOS), served by nginx in Docker and made public with [Tailscale Funnel](https://ryan.tail8af10e.ts.net/). The setup files are in `deploy/`.
-
-**Setting it up**
-1. Clone the repo onto the server:
-   ```bash
-   sudo git clone https://github.com/agraciayyx/NASAVERSE-SIDEQUESTORS-JUKEBOX.git /DATA/AppData/earth-jukebox
-   ```
-2. Start nginx on port 8080, using either CasaOS (App Store → **Custom Install** → **Import** → paste in `deploy/docker-compose.yml`) or the command line:
-   ```bash
-   sudo docker compose -f /DATA/AppData/earth-jukebox/deploy/docker-compose.yml up -d
-   ```
-   If you cloned somewhere else, change the two paths under `volumes:` in `docker-compose.yml` first.
-3. In the [Tailscale admin console](https://login.tailscale.com/admin), turn on **HTTPS Certificates** (under DNS) and allow **Funnel** for the server. Then run:
-   ```bash
-   sudo tailscale funnel --bg 8080
-   ```
-   Tailscale prints the public `https://<server-name>.<tailnet>.ts.net` link. `tailscale funnel status` shows it again; `sudo tailscale funnel reset` takes the mirror offline.
-
-**Updating it:** after a merge into `main`, run `cd /DATA/AppData/earth-jukebox && sudo git pull`. No restart is needed.
-
-**What `deploy/nginx.conf` does:** it hides the repo's `.git` history and the scripts and source frames, lets browsers cache media for a day, and compresses the page code. nginx supports seeking in audio and video, so tracks stream instead of downloading whole first.
-
 ---
 
 ## Project structure
@@ -130,7 +105,6 @@ NASAVERSE-SIDEQUESTORS-JUKEBOX/
 ├── zonal/                  # Track B: data/, main/main.py, output/
 ├── nee/                    # Track C: data/, main/, output/
 ├── lightning/              # Track D: data/, main/, output/
-├── deploy/                 # mirror hosting: nginx.conf + docker-compose.yml
 └── .vercelignore           # files Vercel doesn't need to upload
 ```
 
